@@ -1,0 +1,28 @@
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --accent: #ff9d00;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: sans-serif;
+    margin: 2rem;
+}
+
+h1 { color: var(--accent); }
+
+
+.survival-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minamax(250px, 1fr));
+    gap: 20px;
+    margin-top: 2rem;
+}
+
+.card {
+    border: 2px solid var(--accent);
+    padding: 1.5rem;
+    border-radius: 8px;
+}

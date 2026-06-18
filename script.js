@@ -1,3 +1,19 @@
+let sanityScore = 100;
+const sanityMeterDisplay = document.getElementById('sanity-meter');
+const stabilizeBtn = document.getElementById('btn-stabilize');
+
+
+function checkVitals() {
+    sanityMeterDisplay.innerText = sanityScore + "%";
+
+    if (sanityScore <= 40) {
+        sanityMeterDisplay.style.color = "#ff0000";
+        activeBiomeText.innerText = " 🚨 WARNING: SANITY GOING MAD! 🚨 ";
+    } else {
+        sanityMeterDisplay.style.color = "#ff9d00";
+    }
+}
+
 const  activeBiomeText = document.getElementById('active-biome');
 const forestBtn = document.getElementById('btn-forest');
 
@@ -30,4 +46,12 @@ forestBtn.addEventListener('click', function() {
 
 
     console.log("Forest contentloaded successfully");
+stabilizeBtn.addEventListener('click', function() {
+    if (sanityScore < 100) {
+        sanityScore = Math.min(sanityScore + 20, 100);
+        checkVitals();
+        console.log("Sanity managed. Staying calm.");
+    }
+
+})
 });

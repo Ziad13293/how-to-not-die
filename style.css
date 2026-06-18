@@ -26,3 +26,34 @@ h1 { color: var(--accent); }
     padding: 1.5rem;
     border-radius: 8px;
 }
+
+nav {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 15px;
+}
+
+
+nav button {
+    background-color: transparent;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+
+nav button:hover {
+    background-color: var(--accent);
+    color: var(--bg-color);
+    box-shadow: 0px 0px 10px var(--accent);
+}
+
+
+nav button:active {
+    transform: scale(0.95);
+}

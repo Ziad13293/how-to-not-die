@@ -1,62 +1,68 @@
 <!DOCTYPE html>
-<html lange="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How To Not Die | Ultimate Survival Guide</title>
+    <title> CRISIS BARIER | 3D Campaign </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/OBJLoader.js"></script>
 </head>
 <body>
 
+    <div id="ui-wrapper">
+        <header>
+            <h1> CRISIS BARIER // 3D Campaign </h1>
+            <p class="subtitle">Complete all the 10 escalating levels for each zone.</p>
+        </header>
 
-    <header>
-        <h1>HOW TO NOT DIE</h1>
-        <P>A beginner guide to staying alive when everything goes completely wrong.</P>
-    </header>
+        <nav>
+            <button id="btn-forest" class="biome-btn"> FOREST CAMPAIGN </button>
+            <button id="btn-desert" class="biome-btn"> DESERT CAMPAIGN </button>
+            <button id="btn-sea" class="biome-btn"> MARITIME CAMPAIGN </button>
+        </nav>
 
+        <main>
+            <div class="hud-bar">
+                <h2> LINK STATUS: <span id="active-biome">AWAITING SYSTEM SELECTION</span></h2>
+                <button id="btn-play" class="hidden"> LAUNCH PROTOCOL </button>
+            </div>
 
-    <nav>
-        <button id="btn-forest"> Forest</button>
-        <button id="btn-desert"> Desert</button>
-        <button id="btn-sea"> Stranded at Sea</button>
-    </nav>
-
-    <div id="vitals-bar" style="border: 1px dashed #ff9d00; padding: 1rem; margin: 1.5rem 0; border-radius: 4px;">
-        <h3>⚠️ CRITICAL STATUS METRICS:</h3>
-        <p>Current Sanity Level: <span id="sanity-meter" style="color: #ff9d00; font-weight: bold;">100%</span></p>
-        <button id="btn-stabilize" style="background: #ff9d00; color: #1a1a1a; font-weight: bold; padding: 4px 10px; border: none; border-radius: 3px; cursor: pointer;"> Take a Deep BREATHHH </button>
+            <section class="survival-grid">
+                <div class="card" id="hydration"><div class="card-header"> HYRDATION </div><p>Select a zone to initialize...</p></div>
+                <div class="card" id="feeding"><div class="card-header"> NUTRITION FEED </div><p>Select a zone to initialize...</p></div>
+                <div class="card" id="active"><div class="card-header"> MOTION </div><p>Select a zone to initialize...</p></div>
+                <div class="card" id="entertainment"><div class="card-header"> SANITY METRIC </div><p>Select a zone to initialize...</p></div>
+            </section>
+        </main>
     </div>
 
-    <main>
-        <h2>Current Environment: <span id="active-biome">Select a Biome Above</span></h2>
-
-
-        <section class="survival-grid">
-
-            <div class="card" id="hydration">
-                <h3> How to Hydrate Yourself</h3>
-
-                <p>Placeholder text: Don't drink salt water. Look for dew or rainwater collector options.</p>
-            </div>
-
-            <div class="card" id="feeding">
-                <h3> How to Feed Yourself</h3>
-                <p> Placeholder text: Build a shelter, gather firewood, but don't sweat too much or you lose water.</p>
-            </div>
-
-            <div class="card" id="enterainnment">
-                <h3> Hot to Keep Enterainned (Sanity)</h3>
-                <p>Placeholder text: Count days, talk to a volleyball, keep your brain  working so you don't panic.</p>
-            </div>
-
-
-        </section>
-    </main>
-
-    <footer>
-        <p>Stay Alive, Dont die like a dummass</p>
-    </footer>
-
-    <link rel="stylesheet" href="style.css">
+    <div id="game-container" class="hidden">
+        <div id="controls-sidebar">
+            <h3> GAME SYSTEMS </h3>
+            <div class="metric-line">CAMPAIGN LEVEL: <span id="hud-level">1 / 10</span></div>
+            <div class="metric-line">YOUR HEALTH BAR: <span id="hud-health">15 / 15</span></div>
+            <div class="metric-line">GUN AMMO:<span id="hud-ammo">15 / 15</span></div>
+            <div class="metric-line">TARGETS HP: <span id="hud-monster-hp">10</span></div>
+            <hr class="divider">
+            <h4> CONTROLS GUIDE </h4>
+            <div class="control-key"><span>W</span> Move Forward</div>
+            <div class="control-key"><span>A</span> Turn Left </div>
+            <div class="control-key"><span>S</span> Move Backward </div>
+            <div class="control-key"><span>D</span> Turn Right</div>
+            <div class="control-key spatial"><span>SPACEBAR</span> Shoot Weapon</div>
+            <hr class="divider">
+            <div id="hud-status">STANDBY</div>
+            <button id="btn-quit"> X ABORT MISSION</button>
+        </div>
+        <div id="canvas-3d-anchor"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>

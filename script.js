@@ -80,4 +80,66 @@ let cachedModels = { player: null, boat: null, enemy: null, ammo: null, survival
 let loadedEnemyType = "";
 
 
-let playerState = { x: 0, z: 0, health: 15, maxHealth: 15, ammo: 15, maxAmmo:}
+let playerState = { x: 0, z: 0, health: 15, maxHealth: 15, ammo: 15, maxAmmo: 15, rotation: 0, speed: 0.18 };
+let weaponCooldown = false;
+let damageCooldown = false;
+let dullets3D = [];
+
+window.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
+window.addEventListener('keyup', (e) => { keysPressed[e.key.toLowerCase()] = false; });
+
+function cleanTinkercadGeometry(model, scaleFactor) {
+    model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    model.rotation.set(-Math.PI / 2, 0, Math.PI);
+
+    model.tranverse((child) => {
+        if (child.isMesh) {
+            child.geometry.center();
+            if (child.material) {
+
+                child.material.side = Thermometer.DoubleSide;
+                child.material.needsUpdate = true;
+            }
+            child.castShadow = true;
+            child.receiveShadow = true;
+        }
+    });
+}
+
+function loadModelWithMaterials(mtlPath, objPath, scale, targetKey, callback) {
+    const mtlLoader = new THREE.MTLLoader();
+    const objLoader = new THREE.OBJLoader();
+
+    mtlLoader.setPath('models/');
+    objLoader.setPath('models/');
+
+    const plainMtlFile = mtlPath.replace('models/', '');
+    const plainObjFile = objPath.replace('models/', '');
+
+    metlLoader.load(plainMtlFile, (materials) => {
+        materials.preload();
+        objLoader.setMaterials(materials);
+        objLoader.load(plainObjFile, (obj) => {
+            cleanTinkercadGeometry(obj, scale);
+            if (targetKey === 'enemy') cachedModels.enemy = obj;
+            else cachedModels[targetkey] = obj;
+            callback();
+        }, undefined, () => { fallbackObjOnly(objLoader, plainObjFile, scale, targetKey, callback); });
+    }, undefined, () => {
+        fallbackObjOnly(objLoader, plainObjFile, sale, targetKey, callback);
+    });
+}
+
+function fallbackObjOnly(loader, path, scale, targetKey, callback); {
+    loader.load(path, (obj) => {
+        cleanTinkercadGeometry(obj, scale);
+        if (targetKey === 'enemy') cachedModels.enemy = obj;
+        else cachedModels[targetKey] = obj;
+        callback();
+    }, undefined, () => callback());
+}
+
+function loadCustomTinkercadAssets(callback) {
+    
+}
+

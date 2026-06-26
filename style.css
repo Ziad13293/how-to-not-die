@@ -52,7 +52,7 @@ nav { display: flex; gap: 1rem; margin-bottom: 2.5rem; }
 .hud-bar {
     display: flex;
     justify-content: space-between;
-    align-item: center;
+    align-items: center;
     margin-bottom: 2rem;
 }
 
@@ -70,8 +70,11 @@ nav { display: flex; gap: 1rem; margin-bottom: 2.5rem; }
     box-shadow: 0 0 25px rgba(255, 85, 0, 0.5);
     transition: transform 0.1s;
 }
-#btn-play:hover { transform: scale(1.05); }
-@keyframe multiGlowShift {
+#btn-play:hover { 
+    transform: scale(1.05); 
+}
+
+@keyframes multiGlowShift {
     0% { background-position: 0%; }
     100% { background-position: 400%; }
 }
@@ -82,10 +85,17 @@ nav { display: flex; gap: 1rem; margin-bottom: 2.5rem; }
     gap: 1.5rem;
 }
 
-.card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 1.5rem; }
+.card {
+     background: var(--card-bg); 
+     border: 1px solid var(--border-color); 
+     border-radius: 6px; padding: 1.5rem; 
+}
 .card-header { color: var(--accent-orange); font-size: 1.1rem; font-weight: bold; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
 
-.hidden { display: none !important; }
+.hidden { 
+    display: none !important; 
+}
+
 
 #game-container {
     position: fixed;

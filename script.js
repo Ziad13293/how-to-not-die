@@ -1,3 +1,4 @@
+
 const activeBiomeText = document.getElementById('active-biome');
 const playBtn = document.getElementById('btn-play');
 const uiWrapper = document.getElementById('ui-wrapper');
@@ -16,7 +17,7 @@ const entertainmentText = document.querySelector('#entertainment p');
 const hudLevel = document.getElementById('hud-level');
 const hudHealth = document.getElementById('hud-health');
 const hudAmmo = document.getElementById('hud-ammo');
-const hudMonesterHp = document.getElementById('hud-monster-hp');
+const hudMonsterHp = document.getElementById('hud-monster-hp');
 const hudStatus = document.getElementById('hud-status');
 const canvasAnchor = document.getElementById('canvas-3d-anchor');
 
@@ -26,7 +27,7 @@ let currentLevel = 1;
 
 const biomeData = {
     forest: {
-        title: "FOREST SYSTEM // ELEPHANT CAMPAIGN",
+        title: "CRISIS BARIER // FOREST CAMPAIGN",
         hydration: "Boil jungle stream water using gathered hot stones.",
         feeding: "Collect wild forest berries and clean elephant track green.",
         active: "Navigate under dense canopies. Watch for crushing stampedes.",
@@ -35,7 +36,7 @@ const biomeData = {
         enemyFile: "elephant", playerFile: "player"
     },
     desert: {
-        title: "DESERT SYSTEM // LION CAMPAIGN",
+        title: "CRISIS BARIER // DESERT CAMPAIGN",
         hydration: "Ectract moisture lines from subterranean desert roots.",
         feeding: "Track small lizard beneath rock shards before heat peaks.",
         active: "Sprint across dunes using steady strides. Avoid active pride hunters.",
@@ -44,7 +45,7 @@ const biomeData = {
         enemyFile: "lion", playerFile: "player"
     },
     sea: {
-        title: "MARITIME SYSTEM // SHARK CAMPAIGN",
+        title: "CRISIS BARIER // MARITIME CAMPAIGN",
         hydration: "Catch fresh tropical rain on outstrached boat tarps.",
         feeding: "Spear local surface reef fish. Dry them using pure sea salt layers.",
         active: "Steer boat hull coordinates clear of dynamic surface feeding frenzies.",
@@ -66,13 +67,13 @@ function selectBiome(zone) {
     playBtn.classList.remove('hidden');
 }
 
-forestBtn.addEventListener('click', () => selectedBiome('forest'));
-desertBtn.addEventListener('click', () => selectedBiome('desert'));
-seaBtn.addEventListener('click', () => selectedBiome('sea'));
 
+forestBtn.addEventListener('click', () => selectBiome('forest'));
+desertBtn.addEventListener('click', () => selectBiome('desert'));
+seaBtn.addEventListener('click', () => selectBiome('sea'));
 
 let scene, camera, renderer;
-let playerGroup, enemiesArray = [], dropArray = [], environmentAssets = [];
+let playerGroup, enemiesArray = [], dropsArray = [], environmentAssets = [];
 let keysPressed = {};
 let engineActive = false;
 
@@ -83,7 +84,7 @@ let loadedEnemyType = "";
 let playerState = { x: 0, z: 0, health: 15, maxHealth: 15, ammo: 15, maxAmmo: 15, rotation: 0, speed: 0.18 };
 let weaponCooldown = false;
 let damageCooldown = false;
-let dullets3D = [];
+let bullets3D = [];
 
 window.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
 window.addEventListener('keyup', (e) => { keysPressed[e.key.toLowerCase()] = false; });
@@ -116,7 +117,7 @@ function loadModelWithMaterials(mtlPath, objPath, scale, targetKey, callback) {
     const plainMtlFile = mtlPath.replace('models/', '');
     const plainObjFile = objPath.replace('models/', '');
 
-    metlLoader.load(plainMtlFile, (materials) => {
+    mtlLoader.load(plainMtlFile, (materials) => {
         materials.preload();
         objLoader.setMaterials(materials);
         objLoader.load(plainObjFile, (obj) => {
@@ -126,7 +127,7 @@ function loadModelWithMaterials(mtlPath, objPath, scale, targetKey, callback) {
             callback();
         }, undefined, () => { fallbackObjOnly(objLoader, plainObjFile, scale, targetKey, callback); });
     }, undefined, () => {
-        fallbackObjOnly(objLoader, plainObjFile, sale, targetKey, callback);
+        fallbackObjOnly(objLoader, plainObjFile, scale, targetKey, callback);
     });
 }
 
@@ -157,7 +158,7 @@ function loadCustomTinkercadAssets(callback) {
     if (loadedEnemyType !== config.enemyFile) {
         cachedModels.enemy = null;
         loadedEnemyType = config.enemyFile;
-        manager.itemsStart('enemy');
+        manager.itemStart('enemy');
         loadModelWithMaterials(`models/${config.enemyFile}.mtl`, `models/${config.enemyFile}.obj`, 0.035, 'enemy', () => manager.itemEnd('enemy'));
     }
 
@@ -176,17 +177,16 @@ function loadCustomTinkercadAssets(callback) {
         callback();
     };
 
-    if (manager.isLoading === undefined || Object.keys(manager.itemLoaded).length === 0) {
+    if (manager.isLoading === undefined || Object.keys(manager.itemsLoaded).length === 0) {
         setTimeout(callback, 50);
     }
-
 }
 
 function createEnemyHealthBillboard(hp, maxHp) {
     const canvas = document.createElement('canvas');
     canvas.width = 128;
     canvas.height = 32;
-    const ctx = canvas.getContent('2d');
+    const ctx = canvas.getContext('2d');
 
     ctx.fillStyle = '#222228';
     ctx.fillRect(0, 8, 128, 16);
@@ -196,8 +196,8 @@ function createEnemyHealthBillboard(hp, maxHp) {
     ctx.fillRect(2, 10, (124 * hpPercentage), 12);
 
     const texture = new THREE.CanvasTexture(canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparents: true });
-    const sprite = new THREE.Sprite(spriteMAT);
+    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(spriteMat);
     sprite.scale.set(2.5, 0.65, 1);
     sprite.position.y = 2.4;
     return sprite;
@@ -211,8 +211,8 @@ function initCore3DSimulation() {
     scene.background = new THREE.Color(config.fogColor);
     scene.fog = new THREE.FogExp2(config.fogColor, 0.025);
 
-    renderer = new THREE.WebGlRenderer({ antialias: true });
-    renderer.setSize(canvasAnchor.clientWdith,  canvasAnchor.clientHeight);
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(canvasAnchor.clientWidth,  canvasAnchor.clientHeight);
     canvasAnchor.appendChild(renderer.domElement);
 
     camera = new THREE.PerspectiveCamera(65, canvasAnchor.clientWidth / canvasAnchor.clientHeight, 0.1, 1000);
@@ -231,7 +231,7 @@ function initCore3DSimulation() {
     buildEnvironmentDecoration(config.environmentType);
 
     playerGroup = new THREE.Group();
-    let activePlayerAsset = config.player.playerFile === "boat" ?  cachedModels.boat : cachedModels.player;
+    let activePlayerAsset = config.playerFile === "boat" ? cachedModels.boat : cachedModels.player;
 
     if (activePlayerAsset) {
         playerGroup.add(activePlayerAsset.clone());
@@ -287,7 +287,7 @@ function buildEnvironmentDecoration(type) {
                 let leavesGeo = new THREE.ConeGeometry(1.4 - (t * 0.3), 1.8, 8);
                 let leavesMat = new THREE.MeshStandardMaterial({ color: 0x0a2f14, roughness: 0.8 });
                 let leaves =  new THREE.Mesh(leavesGeo, leavesMat);
-                leaves.postion.y = 2.2 + (t * 1.1);
+                leaves.position.y = 2.2 + (t * 1.1);
                 treeGroup.add(leaves);
             }
 
@@ -326,19 +326,20 @@ function spawnEnemyInstance(speed) {
 
     let angle = Math.random() * Math.PI * 2;
     let radius = 35 + Math.random() * 10;
-    enemyGrouo.add(new THREE.Mesh(fallbackGeo, fallbackMat));
-
-
-    let angle = Math.random() * Math.PI * 2;
-    let radius = 35 + Math.random() * 10;
     enemyGroup.position.set(Math.cos(angle) * radius, 0.75, Math.sin(angle) * radius);
-
 
     let hpBar = createEnemyHealthBillboard(hpMetric, hpMetric);
     enemyGroup.add(hpBar);
 
     scene.add(enemyGroup);
     enemiesArray.push({ mesh: enemyGroup, billboard: hpBar, hp: hpMetric, maxHp: hpMetric, speed: speed });
+}
+
+function updateEnemyHealthBillboard(enemyInstance) {
+    enemyInstance.mesh.remove(enemyInstance.billboard);
+    let newBar = createEnemyHealthBillboard(enemyInstance.hp, enemyInstance.maxHp);
+    enemyInstance.billboard = newBar;
+    enemyInstance.mesh.add(newBar);
 }
 
 function triggerItemDropGenerators(){
@@ -349,20 +350,20 @@ function triggerItemDropGenerators(){
     types.forEach(type => {
         let dropGroup = new THREE.Group();
         if(type === 'ammo' && cachedModels.ammo) {
-            dropGroup.add(cachedModels.ammo.clone) 
+           dropGroup.add(cachedModels.ammo.clone()); 
         } else if (type === 'survival' && cachedModels.survival) {
-            ddropGroup.add(cachedModels.survival.clone());
+            dropGroup.add(cachedModels.survival.clone());
         } else {
             let geo = type === 'ammo' ? new THREE.BoxGeometry(1.2, 1.2, 1.2) : new THREE.SphereGeometry(0.8, 8, 8);
-            let mat = new THREE.MeshStandardMaterial({ color: type === 'ammo' ? 0xfffd700 : 0xbf55ec });
+            let mat = new THREE.MeshStandardMaterial({ color: type === 'ammo' ? 0xffd700 : 0xbf55ec });
             dropGroup.add(new THREE.Mesh(geo, mat));
         }
 
         let rx = (Math.random() * 40) - 20;
         let rz = (Math.random() * 40) - 20;
         dropGroup.position.set(rx, 0.5, rz);
-        scene.add(dropGrouo);
-        dropArray.push({ mesh: dropGroup, type: type })
+        scene.add(dropGroup);
+        dropsArray.push({ mesh: dropGroup, type: type });
     });
 }
 
@@ -372,14 +373,14 @@ window.addEventListener('keydown', (e) => {
         weaponCooldown = true;
         setTimeout(() => { weaponCooldown = false; }, 200);
 
-        let laserGEO = new THREE.CylinderGeometry(0.06, 0.6, 1.2, 6);
+        let laserGeo = new THREE.CylinderGeometry(0.06, 0.06, 1.2, 6);
         laserGeo.rotateX(Math.PI / 2);
         let laserMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         let laserMesh = new THREE.Mesh(laserGeo, laserMat);
 
 
         let ox = Math.sin(playerState.rotation);
-        let oz = Math.cos(playerState.rotaiton);
+        let oz = Math.cos(playerState.rotation);
 
         laserMesh.position.set(playerState.x + ox, 0.8, playerState.z + oz);
         laserMesh.rotation.y = playerState.rotation;
@@ -430,7 +431,7 @@ function renderCampaignLoop3D() {
 function processEngineFrameUpdates() {
 
     if (keysPressed['a']) playerState.rotation += 0.022;
-    if (keysPressed['d']) playerState.rotation += 0.022;
+    if (keysPressed['d']) playerState.rotation -= 0.022;
 
     let forwardX = Math.sin(playerState.rotation);
     let forwardZ = Math.cos(playerState.rotation);
@@ -448,10 +449,10 @@ function processEngineFrameUpdates() {
     playerState.z = Math.max(Math.min(playerState.z, 50), -50);
 
     playerGroup.position.set(playerState.x, 0.4, playerState.z);
-    playerGroup.rotaiton.y = playerState.rotation;
+    playerGroup.rotation.y = playerState.rotation;
 
-    for (let i = bullet3D.length - 1; i >= 0; i--) {
-        let b = bullet3D[i];
+    for (let i = bullets3D.length - 1; i >= 0; i--) {
+        let b = bullets3D[i];
         b.mesh.position.x += b.vx;
         b.mesh.position.z += b.vz;
         b.range++;
@@ -462,7 +463,7 @@ function processEngineFrameUpdates() {
             let enemy = enemiesArray[j];
             let edx = enemy.mesh.position.x - b.mesh.position.x;
             let edz = enemy.mesh.position.z - b.mesh.position.z;
-            let dist = Math.sqrt(edx * edz * edz);
+            let dist = Math.sqrt(edx * edx + edz * edz);
 
             if (dist < 2.5) {
                 enemy.hp--;
@@ -476,7 +477,7 @@ function processEngineFrameUpdates() {
                     scene.remove(enemy.mesh);
                     enemiesArray.splice(j, 1);
 
-                    if (enemiesArray, length === 0) {
+                    if (enemiesArray.length === 0) {
                         if (currentLevel < 10) {
                             currentLevel++;
                             hudStatus.innerText = `LEVEL ${currentLevel} INITIALIZING...`;
@@ -492,16 +493,16 @@ function processEngineFrameUpdates() {
             }
         }
 
-        if (hiRegistered) continue;
+        if (hitRegistered) continue;
         if (b.range > 50) {
             scene.remove(b.mesh);
             bullets3D.splice(i,1);
         }
     }
 
-    let aggregateMonesterHp = 0;
+    let aggregateMonsterHp = 0;
     enemiesArray.forEach(enemy => {
-        aggregateMonesterHp += enemy.hp;
+        aggregateMonsterHp += enemy.hp;
 
         let tdx = playerState.x - enemy.mesh.position.x;
         let tdz = playerState.z - enemy.mesh.position.z;
@@ -512,7 +513,7 @@ function processEngineFrameUpdates() {
             enemy.mesh.position.z += (tdz / tDist) * enemy.speed;
 
             let movementAngle = Math.atan2(tdx, tdz);
-            enemy.mesh.rotation.y = movemengtAngle;
+            enemy.mesh.rotation.y = movementAngle;
         }
 
 
@@ -534,7 +535,7 @@ function processEngineFrameUpdates() {
     });
 
     for (let i = dropsArray.length - 1; i >= 0; i--) {
-        let drop = dropArray[i];
+        let drop = dropsArray[i];
         let pdx = playerState.x - drop.mesh.position.x;
         let pdz = playerState.z - drop.mesh.position.z;
         let pDist = Math.sqrt(pdx * pdx + pdz * pdz);
@@ -549,7 +550,7 @@ function processEngineFrameUpdates() {
             scene.remove(drop.mesh);
             dropsArray.splice(i, 1);
 
-            if (dropArray.length === 0) {
+            if (dropsArray.length === 0) {
                 setTimeout(triggerItemDropGenerators, 3000);
             }
         }
@@ -558,12 +559,12 @@ function processEngineFrameUpdates() {
     hudLevel.innerText = `${currentLevel} / 10`;
     hudHealth.innerText = `${playerState.health} / ${playerState.maxHealth}`;
     hudAmmo.innerText = `${playerState.ammo} / ${playerState.maxAmmo}`;
-    hudMonesterHp.innerText = enemiesArray.length  > 0 ? aggregatedMonsterHp : "0";
+    hudMonsterHp.innerText = enemiesArray.length > 0 ? aggregateMonsterHp : "0";
 }
 
 window.addEventListener('resize', () => {
-     if (!scene) return;
+    if (!scene) return;
     camera.aspect = canvasAnchor.clientWidth / canvasAnchor.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(canvasAnchor.clientWidht, canvasAnchor.clientHeight);
-        }); 
+    renderer.setSize(canvasAnchor.clientWidth, canvasAnchor.clientHeight);
+}); 
